@@ -9,6 +9,12 @@
  */
 package vpp;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 /**
  * The main entry point for the Velocity Preprocessor.
  */
@@ -61,6 +67,31 @@ public class Main implements Runnable {
         return this.args;
     }
 
+    private void parseArgs() throws ParseException {
+        final Option outputPathOption =
+            new Option("o", "output-path", true,
+                "The output file or directory. If not specified then the "
+                    + "output is written to standard output.");
+
+        final Options options = new Options();
+        options.addOption(outputPathOption);
+
+        final GnuParser parser = new GnuParser();
+        final CommandLine parsedArgs = parser.parse(options, this.args);
+        final String[] leftoverArgs = parsedArgs.getArgs();
+
+        System.out.println("Leftover Args (" + leftoverArgs.length + ")");
+        for (int i = 0; i < leftoverArgs.length; i++) {
+            System.out.println("  " + i + ": " + leftoverArgs[i]);
+        }
+
+        final Option[] parsedOptions = parsedArgs.getOptions();
+        for (final Option option : parsedOptions) {
+            final String value = option.getValue();
+            System.out.println(option.getOpt() + "=" + value);
+        }
+    }
+
     /**
      * Runs the Velocity Preprocessor using the command-line arguments that were
      * given to the constructor. Upon completion, {@link #exit(int)} is invoked
@@ -68,7 +99,15 @@ public class Main implements Runnable {
      * circumstances this method never returns.
      */
     public void run() {
-        this.exit(0);
+        int exitCode = 0;
+        try {
+            this.parseArgs();
+        } catch (final ParseException e) {
+            System.err.println("ERROR: " + e.getMessage());
+            exitCode = 2;
+        }
+
+        this.exit(exitCode);
     }
 
     /**
