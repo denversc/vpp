@@ -11,6 +11,7 @@ package vpp;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -73,22 +74,37 @@ public class Main implements Runnable {
                 "The output file or directory. If not specified then the "
                     + "output is written to standard output.");
 
+        final Option helpOption =
+            new Option("h", "help", false,
+                "Print help for this application and exit");
+
         final Options options = new Options();
         options.addOption(outputPathOption);
+        options.addOption(helpOption);
 
         final GnuParser parser = new GnuParser();
         final CommandLine parsedArgs = parser.parse(options, this.args);
         final String[] leftoverArgs = parsedArgs.getArgs();
+
+        boolean printHelp = false;
+        final Option[] parsedOptions = parsedArgs.getOptions();
+        for (final Option option : parsedOptions) {
+            final String value = option.getValue();
+            System.out.println(option.getOpt() + "=" + value);
+
+            if (option.getOpt().equals("h")) {
+                printHelp = true;
+            }
+        }
 
         System.out.println("Leftover Args (" + leftoverArgs.length + ")");
         for (int i = 0; i < leftoverArgs.length; i++) {
             System.out.println("  " + i + ": " + leftoverArgs[i]);
         }
 
-        final Option[] parsedOptions = parsedArgs.getOptions();
-        for (final Option option : parsedOptions) {
-            final String value = option.getValue();
-            System.out.println(option.getOpt() + "=" + value);
+        if (printHelp) {
+            final HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("[options] [input paths]", options);
         }
     }
 
