@@ -14,7 +14,7 @@ package vpp;
  */
 public class Main implements Runnable {
 
-    private final String[] _args;
+    private final String[] args;
 
     /**
      * Creates a new instance of <code>Main</code>.
@@ -26,7 +26,7 @@ public class Main implements Runnable {
      * @param args the command-line arguments to use; may be null
      */
     public Main(String[] args) {
-        this._args = args;
+        this.args = args;
     }
 
     /**
@@ -58,7 +58,7 @@ public class Main implements Runnable {
      * constructor; may be null
      */
     public String[] getArgs() {
-        return this._args;
+        return this.args;
     }
 
     /**
