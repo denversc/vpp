@@ -15,6 +15,22 @@
     <powermock.version>1.4.10</powermock.version>
   </properties>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>vpp.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>  
+
   <dependencies>
     <dependency>
       <groupId>org.apache.velocity</groupId>
