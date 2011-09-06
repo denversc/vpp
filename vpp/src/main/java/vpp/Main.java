@@ -9,6 +9,8 @@
  */
 package vpp;
 
+import static vpp.util.Arrays.copyFailIfNull;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -26,14 +28,15 @@ public class Main implements Runnable {
     /**
      * Creates a new instance of <code>Main</code>.
      * <p>
-     * A reference to the given String array will be stored internally.
-     * Therefore, no modifications to this array should be done; otherwise,
-     * undefined behaviour may occur.
+     * A copy of the given String array will be stored internally and no
+     * references to the given array will be stored internally.
      * 
-     * @param args the command-line arguments to use; may be null
+     * @param args the command-line arguments to use
+     * @throws NullPointerException if <code>args==null</code> or any element of
+     * <code>args</code> is null
      */
     public Main(String[] args) {
-        this.args = args;
+        this.args = copyFailIfNull(args, "args");
     }
 
     /**
@@ -56,13 +59,13 @@ public class Main implements Runnable {
     }
 
     /**
-     * Returns the command-line arguments array used by this class. A reference
-     * to the exact array that was specified to the constructor is returned;
-     * therefore, it is strongly recommended to <em>not</em> modify the array in
-     * any way, as it may lead to undefined behaviour.
+     * Returns the command-line arguments array used by this class. The returned
+     * array is a copy, and may be freely modified by the caller without any
+     * effect whatsoever to this object.
      * 
      * @return the command-line arguments array that was specified to the
-     * constructor; may be null
+     * constructor; never returns null and the array will never contain null
+     * elements
      */
     public String[] getArgs() {
         return this.args;
