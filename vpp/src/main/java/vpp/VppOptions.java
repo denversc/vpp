@@ -1,7 +1,7 @@
 /*
  * VppOptions.java
  * By: Denver Coneybeare
- * 2011-09-20
+ * Sept 20, 2011
  *
  * Copyright 2011 Denver Coneybeare
  * This file is released under the Apache License Version 2.0
