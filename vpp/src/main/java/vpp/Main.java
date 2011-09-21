@@ -71,7 +71,7 @@ public class Main implements Runnable {
         return this.args;
     }
 
-    private void parseArgs() throws ParseException {
+    private VppOptions parseArgs() throws ParseException {
         final Option outputPathOption =
             new Option("o", "output-path", true,
                 "The output file or directory. If not specified then the "
@@ -87,28 +87,31 @@ public class Main implements Runnable {
 
         final GnuParser parser = new GnuParser();
         final CommandLine parsedArgs = parser.parse(options, this.args);
+        final VppOptions vppOptions = new VppOptions();
         final String[] leftoverArgs = parsedArgs.getArgs();
 
         boolean printHelp = false;
         final Option[] parsedOptions = parsedArgs.getOptions();
         for (final Option option : parsedOptions) {
             final String value = option.getValue();
-            System.out.println(option.getOpt() + "=" + value);
-
-            if (option.getOpt().equals("h")) {
+            if (option.getOpt().equals(helpOption.getOpt())) {
                 printHelp = true;
+            } else if (option.getOpt().equals(outputPathOption.getOpt())) {
+                vppOptions.setDefine(value, "{post" + value + "}");
             }
         }
 
-        System.out.println("Leftover Args (" + leftoverArgs.length + ")");
-        for (int i = 0; i < leftoverArgs.length; i++) {
-            System.out.println("  " + i + ": " + leftoverArgs[i]);
+        for (final String leftoverArg : leftoverArgs) {
+            vppOptions.addInputPath(leftoverArg);
         }
 
         if (printHelp) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("[options] [input paths]", options);
+            return null;
         }
+
+        return vppOptions;
     }
 
     /**
@@ -120,7 +123,10 @@ public class Main implements Runnable {
     public void run() {
         int exitCode = 0;
         try {
-            this.parseArgs();
+            final VppOptions vppOptions = this.parseArgs();
+            if (vppOptions != null) {
+
+            }
         } catch (final ParseException e) {
             System.err.println("ERROR: " + e.getMessage());
             exitCode = 2;

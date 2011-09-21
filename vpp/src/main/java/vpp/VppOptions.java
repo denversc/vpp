@@ -10,9 +10,9 @@
 package vpp;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Velocity Pre-processor options.
@@ -26,30 +26,14 @@ public class VppOptions {
 
     private final List<String> inputPaths;
     private String outputPath;
-    private final Set<String> defines;
+    private final Map<String, String> defines;
 
     /**
      * Creates a new instance of <code>VppOptions</code>.
      */
     public VppOptions() {
         this.inputPaths = new ArrayList<String>();
-        this.defines = new HashSet<String>();
-    }
-
-    /**
-     * Adds a define to this object's set of defines. If the given define is
-     * already present, then this method does nothing.
-     * 
-     * @param define the define to add
-     * @throws NullPointerException if define==null
-     * @see #getDefines()
-     * @see #removeDefine(String)
-     */
-    public synchronized void addDefine(String define) {
-        if (define == null) {
-            throw new NullPointerException("define==null");
-        }
-        this.defines.add(define);
+        this.defines = new HashMap<String, String>();
     }
 
     /**
@@ -71,17 +55,37 @@ public class VppOptions {
     }
 
     /**
-     * Returns this object's set of defines. This method creates a new array and
-     * copies each of the defines into that array and returns it. The defines
-     * will be unordered.
+     * Returns the value of a define set in this object.
      * 
-     * @return a newly-created array whose values are the defines, unordered;
-     * never returns null and no elements of the array will be null
-     * @see #addDefine(String)
+     * @param key the key of the define whose value to return; may be null
+     * @return a string whose value is the value of the given define; returns
+     * null if the define is not set, if the define is explicitly set to null,
+     * or if the given key is null
+     * @see #setDefine(String, String)
      * @see #removeDefine(String)
      */
-    public synchronized String[] getDefines() {
-        return this.defines.toArray(new String[this.defines.size()]);
+    public synchronized String getDefine(String key) {
+        if (key == null) {
+            return null;
+        }
+        final String value = this.defines.get(key);
+        return value;
+    }
+
+    /**
+     * Returns the keys of this object's set of defines. This method creates a
+     * new array and copies each of the keys into that array and returns it. The
+     * keys will be unordered.
+     * 
+     * @return a newly-created array whose values are the keys of the defines,
+     * unordered; never returns null and no elements of the array will be null
+     * @see #setDefine(String, String)
+     * @see #removeDefine(String)
+     */
+    public synchronized String[] getDefineKeys() {
+        final String[] array = new String[this.defines.size()];
+        this.defines.keySet().toArray(array);
+        return array;
     }
 
     /**
@@ -101,7 +105,9 @@ public class VppOptions {
      * @see #removeInputPath(String)
      */
     public synchronized String[] getInputPaths() {
-        return this.inputPaths.toArray(new String[this.inputPaths.size()]);
+        final String[] array = new String[this.inputPaths.size()];
+        this.inputPaths.toArray(array);
+        return array;
     }
 
     /**
@@ -117,7 +123,8 @@ public class VppOptions {
      * @see #removeInputPath(String)
      */
     public synchronized int getNumInputPaths() {
-        return this.inputPaths.size();
+        final int size = this.inputPaths.size();
+        return size;
     }
 
     /**
@@ -136,14 +143,14 @@ public class VppOptions {
      * is not present in this object's set of defines then this method does
      * nothing and returns as if successful.
      * 
-     * @param define the define to remove; may be null, in which case this
-     * method behaves as if the given define was not present in the set
-     * @see #addDefine(String)
-     * @see #getDefines()
+     * @param key the key of the define to remove; may be null, in which case
+     * this method behaves as if the given define was not present in the set
+     * @see #setDefine(String, String)
+     * @see #getDefineKeys()
      */
-    public synchronized void removeDefine(String define) {
-        if (define != null) {
-            this.defines.remove(define);
+    public synchronized void removeDefine(String key) {
+        if (key != null) {
+            this.defines.remove(key);
         }
     }
 
@@ -165,6 +172,23 @@ public class VppOptions {
         if (path != null) {
             this.inputPaths.remove(path);
         }
+    }
+
+    /**
+     * Sets a define in this object. If a define with the given key is already
+     * set then it is replaced with the new value.
+     * 
+     * @param key the key of the define to add
+     * @param value the key of the define to add; may be null
+     * @throws NullPointerException if key==null
+     * @see #getDefineKeys()
+     * @see #removeDefine(String)
+     */
+    public synchronized void setDefine(String key, String value) {
+        if (key == null) {
+            throw new NullPointerException("key==null");
+        }
+        this.defines.put(key, value);
     }
 
     /**
